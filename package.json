@@ -1,5 +1,5 @@
 {
-  "name": "bull-board",
+  "name": "@lorenzorapetti/bull-board",
   "description": "Bull queue UI for inspecting jobs",
   "version": "1.5.1",
   "keywords": [
