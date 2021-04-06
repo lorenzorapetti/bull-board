@@ -127,5 +127,8 @@
       "release": true
     }
   },
+  "publishConfig": {
+    "access": "public"
+  },
   "snyk": true
 }
