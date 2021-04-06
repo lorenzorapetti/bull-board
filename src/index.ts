@@ -8,6 +8,8 @@ import path from 'path'
 import { BullBoardQueues, QueueAdapter } from './@types/app'
 import { cleanAll } from './routes/cleanAll'
 import { cleanJob } from './routes/cleanJob'
+import { pauseQueue } from './routes/pauseQueue'
+import { resumeQueue } from './routes/resumeQueue'
 import { errorHandler } from './routes/errorHandler'
 import { entryPoint } from './routes/index'
 import { jobLogs } from './routes/jobLogs'
@@ -38,6 +40,8 @@ router.use('/static', express.static(path.resolve(__dirname, '../static')))
 router.get(['/', '/queue/:queueName'], entryPoint)
 router.get('/api/queues', wrapAsync(queuesHandler))
 router.put('/api/queues/:queueName/retry', wrapAsync(retryAll))
+router.put('/api/queues/:queueName/pause', wrapAsync(pauseQueue))
+router.put('/api/queues/:queueName/resume', wrapAsync(resumeQueue))
 router.put('/api/queues/:queueName/:id/retry', wrapAsync(retryJob))
 router.put('/api/queues/:queueName/:id/clean', wrapAsync(cleanJob))
 router.put('/api/queues/:queueName/:id/promote', wrapAsync(promoteJob))

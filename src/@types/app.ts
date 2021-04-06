@@ -42,6 +42,12 @@ export interface QueueAdapter {
   format(field: 'data' | 'returnValue', data: any): any
 
   getJobLogs(jobId: string): Promise<string[]>
+
+  pause(): Promise<void>
+
+  resume(): Promise<void>
+
+  isPaused(): Promise<boolean>
 }
 
 export interface QueueAdapterOptions {
@@ -86,6 +92,7 @@ export interface AppQueue {
   counts: Record<Status, number>
   jobs: AppJob[]
   readOnlyMode: boolean
+  isPaused: boolean
 }
 
 export type SelectedStatuses = Record<AppQueue['name'], Status>
@@ -99,5 +106,7 @@ export interface QueueActions {
   cleanAllDelayed: (queueName: string) => () => Promise<void>
   cleanAllFailed: (queueName: string) => () => Promise<void>
   cleanAllCompleted: (queueName: string) => () => Promise<void>
+  pause: (queueName: string) => () => Promise<void>
+  resume: (queueName: string) => () => Promise<void>
   setSelectedStatuses: React.Dispatch<React.SetStateAction<SelectedStatuses>>
 }

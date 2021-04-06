@@ -41,6 +41,18 @@ export class BullAdapter extends BaseAdapter {
     return (this.queue.getJobCounts() as unknown) as Promise<JobCounts>
   }
 
+  public pause(): Promise<void> {
+    return this.queue.pause()
+  }
+
+  public resume(): Promise<void> {
+    return this.queue.resume()
+  }
+
+  public isPaused(): Promise<boolean> {
+    return this.queue.isPaused()
+  }
+
   public getJobLogs(id: string): Promise<string[]> {
     return this.queue.getJobLogs(id).then(({ logs }) => logs)
   }

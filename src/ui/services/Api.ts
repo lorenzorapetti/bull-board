@@ -77,6 +77,14 @@ export class Api {
     )
   }
 
+  public pauseQueue(queueName: string): Promise<void> {
+    return this.axios.put(`/queues/${encodeURIComponent(queueName)}/pause`)
+  }
+
+  public resumeQueue(queueName: string): Promise<void> {
+    return this.axios.put(`/queues/${encodeURIComponent(queueName)}/resume`)
+  }
+
   private handleResponse(response: AxiosResponse): any {
     return response.data
   }

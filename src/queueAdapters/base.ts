@@ -46,6 +46,12 @@ export abstract class BaseAdapter implements QueueAdapter {
     end?: number,
   ): Promise<(Job | JobMq)[]>
 
+  public abstract pause(): Promise<void>
+
+  public abstract resume(): Promise<void>
+
+  public abstract isPaused(): Promise<boolean>
+
   public abstract getJobLogs(id: string): Promise<string[]>
 
   public abstract getName(): string
