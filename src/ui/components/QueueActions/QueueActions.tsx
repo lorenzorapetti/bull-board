@@ -13,7 +13,7 @@ interface QueueActionProps {
   status: Status
 }
 
-const ACTIONABLE_STATUSES = ['failed', 'delayed', 'completed']
+const ACTIONABLE_STATUSES = ['failed', 'delayed', 'completed', 'waiting']
 
 const isStatusActionable = (status: Status): boolean =>
   ACTIONABLE_STATUSES.includes(status)
@@ -53,6 +53,11 @@ export const QueueActions = ({ status, actions, queue }: QueueActionProps) => {
       {status === 'completed' && (
         <li>
           <CleanAllButton onClick={actions.cleanAllCompleted(queue.name)} />
+        </li>
+      )}
+      {status === 'waiting' && (
+        <li>
+          <CleanAllButton onClick={actions.cleanAllWaiting(queue.name)} />
         </li>
       )}
     </ul>

@@ -41,6 +41,12 @@ export class Api {
     )
   }
 
+  public cleanAllWaiting(queueName: string): Promise<void> {
+    return this.axios.put(
+      `/queues/${encodeURIComponent(queueName)}/clean/waiting`,
+    )
+  }
+
   public cleanJob(
     queueName: string,
     jobId: string | number | undefined,

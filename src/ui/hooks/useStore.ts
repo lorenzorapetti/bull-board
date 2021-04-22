@@ -86,6 +86,9 @@ export const useStore = (api: Api): Store => {
   const cleanAllCompleted = (queueName: string) => () =>
     api.cleanAllCompleted(queueName).then(update)
 
+  const cleanAllWaiting = (queueName: string) => () =>
+    api.cleanAllWaiting(queueName).then(update)
+
   const getJobLogs = (queueName: string) => (job: AppJob) => () =>
     api.getJobLogs(queueName, job.id)
 
@@ -105,6 +108,7 @@ export const useStore = (api: Api): Store => {
       cleanAllDelayed,
       cleanAllFailed,
       cleanAllCompleted,
+      cleanAllWaiting,
       getJobLogs,
       pause,
       resume,
