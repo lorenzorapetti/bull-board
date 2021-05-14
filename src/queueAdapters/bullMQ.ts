@@ -17,12 +17,13 @@ export class BullMQAdapter extends BaseAdapter {
     super(options)
   }
 
-  public getClient(): Queue['client'] {
-    return this.queue.client
+  public async getRedisInfo(): Promise<string> {
+    const client = await this.queue.client
+    return client.info()
   }
 
   public getName(): string {
-    return this.queue.toKey('~')
+    return this.queue.name
   }
 
   public clean(jobStatus: JobCleanStatus, graceTimeMs: number): Promise<void> {

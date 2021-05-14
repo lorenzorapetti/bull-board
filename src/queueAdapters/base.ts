@@ -1,15 +1,12 @@
-import { Job } from 'bull'
-import { Job as JobMq } from 'bullmq'
 import {
   JobCleanStatus,
   JobCounts,
   JobStatus,
-  QueueAdapter,
   QueueAdapterOptions,
+  QueueJob,
 } from '../@types/app'
-import * as Redis from 'ioredis'
 
-export abstract class BaseAdapter implements QueueAdapter {
+export abstract class BaseAdapter {
   public readonly readOnlyMode: boolean
   private formatters: Record<string, (data: any) => any> = {}
 
@@ -36,7 +33,7 @@ export abstract class BaseAdapter implements QueueAdapter {
     graceTimeMs: number,
   ): Promise<void>
 
-  public abstract getJob(id: string): Promise<Job | JobMq | undefined | null>
+  public abstract getJob(id: string): Promise<QueueJob | undefined | null>
 
   public abstract getJobCounts(...jobStatuses: JobStatus[]): Promise<JobCounts>
 
@@ -44,7 +41,7 @@ export abstract class BaseAdapter implements QueueAdapter {
     jobStatuses: JobStatus[],
     start?: number,
     end?: number,
-  ): Promise<(Job | JobMq)[]>
+  ): Promise<QueueJob[]>
 
   public abstract pause(): Promise<void>
 
@@ -56,5 +53,5 @@ export abstract class BaseAdapter implements QueueAdapter {
 
   public abstract getName(): string
 
-  public abstract getClient(): Promise<Redis.Redis>
+  public abstract getRedisInfo(): Promise<string>
 }

@@ -1,37 +1,19 @@
 import { Queue } from 'bullmq'
 import request from 'supertest'
 
-import * as bullBoard from './index'
-import { BullMQAdapter } from './queueAdapters/bullMQ'
-
-describe('index', () => {
-  it('should save the interface', () => {
-    expect(bullBoard).toMatchInlineSnapshot(`
-      Object {
-        "BullAdapter": [Function],
-        "BullMQAdapter": [Function],
-        "replaceQueues": [Function],
-        "router": [Function],
-        "setQueues": [Function],
-      }
-    `)
-  })
-})
+import { createBullBoard } from '../../src'
+import { BullMQAdapter } from '../../src/queueAdapters/bullMQ'
 
 describe('happy', () => {
-  const { router, setQueues, replaceQueues } = bullBoard
-
   it('should be able to set queue', async () => {
-    const paintQueue = new BullMQAdapter(
-      new Queue('Paint', {
-        connection: {
-          host: 'localhost',
-          port: 6379,
-        },
-      }),
-    )
+    const paintQueue = new Queue('Paint', {
+      connection: {
+        host: 'localhost',
+        port: 6379,
+      },
+    })
 
-    setQueues([paintQueue])
+    const { router } = createBullBoard([new BullMQAdapter(paintQueue)])
 
     await request(router)
       .get('/api/queues')
@@ -63,7 +45,7 @@ describe('happy', () => {
                 },
                 "isPaused": false,
                 "jobs": Array [],
-                "name": "bull:Paint:~",
+                "name": "Paint",
                 "readOnlyMode": false,
               },
             ],
@@ -82,33 +64,33 @@ describe('happy', () => {
   })
 
   it('should be able to replace queues', async () => {
-    const paintQueue = new BullMQAdapter(
-      new Queue('Paint', {
-        connection: {
-          host: 'localhost',
-          port: 6379,
-        },
-      }),
-    )
-    const drainQueue = new BullMQAdapter(
-      new Queue('Drain', {
-        connection: {
-          host: 'localhost',
-          port: 6379,
-        },
-      }),
-    )
-    const codeQueue = new BullMQAdapter(
-      new Queue('Code', {
-        connection: {
-          host: 'localhost',
-          port: 6379,
-        },
-      }),
-    )
+    const paintQueue = new Queue('Paint', {
+      connection: {
+        host: 'localhost',
+        port: 6379,
+      },
+    })
 
-    setQueues([paintQueue, drainQueue])
-    replaceQueues([codeQueue])
+    const drainQueue = new Queue('Drain', {
+      connection: {
+        host: 'localhost',
+        port: 6379,
+      },
+    })
+
+    const codeQueue = new Queue('Code', {
+      connection: {
+        host: 'localhost',
+        port: 6379,
+      },
+    })
+
+    const { router, replaceQueues } = createBullBoard([
+      new BullMQAdapter(paintQueue),
+      new BullMQAdapter(drainQueue),
+    ])
+
+    replaceQueues([new BullMQAdapter(codeQueue)])
 
     await request(router)
       .get('/api/queues')
@@ -140,7 +122,7 @@ describe('happy', () => {
                 },
                 "isPaused": false,
                 "jobs": Array [],
-                "name": "bull:Code:~",
+                "name": "Code",
                 "readOnlyMode": false,
               },
             ],
@@ -159,16 +141,16 @@ describe('happy', () => {
   })
 
   it('should be able to replace queues without initial set', async () => {
-    const codeQueue = new BullMQAdapter(
-      new Queue('Code', {
-        connection: {
-          host: 'localhost',
-          port: 6379,
-        },
-      }),
-    )
+    const codeQueue = new Queue('Code', {
+      connection: {
+        host: 'localhost',
+        port: 6379,
+      },
+    })
 
-    replaceQueues([codeQueue])
+    const { router, replaceQueues } = createBullBoard([])
+
+    replaceQueues([new BullMQAdapter(codeQueue)])
 
     await request(router)
       .get('/api/queues')
@@ -200,7 +182,7 @@ describe('happy', () => {
                 },
                 "isPaused": false,
                 "jobs": Array [],
-                "name": "bull:Code:~",
+                "name": "Code",
                 "readOnlyMode": false,
               },
             ],

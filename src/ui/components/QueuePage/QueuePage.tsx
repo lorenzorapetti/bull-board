@@ -24,11 +24,7 @@ export const QueuePage = ({
     <section>
       <div className={s.stickyHeader}>
         <QueueStatus queue={queue} actions={actions} />
-        <StatusMenu
-          queue={queue}
-          selectedStatus={selectedStatus}
-          onChange={actions.setSelectedStatuses}
-        />
+        <StatusMenu queue={queue} />
         {!queue.readOnlyMode && (
           <QueueActions
             queue={queue}

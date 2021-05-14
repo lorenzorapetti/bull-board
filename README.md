@@ -1,7 +1,7 @@
 # bull-board 🎯
 
-Bull Dashboard is a UI built on top of [Bull](https://github.com/OptimalBits/bull) to help you visualize your queues and their jobs.
-With this library you get a beautiful UI for visualizing what's happening with each job in your queues, their status and some actions that will enable you to get the jobs done.
+Bull Dashboard is a UI built on top of [Bull](https://github.com/OptimalBits/bull) or [BullMQ](https://github.com/taskforcesh/bullmq) to help you visualize your queues and their jobs.
+With this library you get a beautiful UI for visualizing what's happening with each job in your queues, their status and some actions that will enable you to get the job done.
 
 <p align="center">
   <a href="https://www.npmjs.com/package/bull-board">
@@ -45,62 +45,75 @@ npm i bull-board
 
 ## Hello World
 
-The first step is to let bull-board know the queues you have already set up, to do so we use the `setQueues` method.
+The first step is to setup `bull-board` by calling `createBullBoard` method.
+
+```js
+const express = require('express')
+const Queue = require('bull')
+const QueueMQ = require('bullmq')
+const { createBullBoard } = require('bull-board')
+const { BullAdapter } = require('bull-board/bullAdapter')
+const { BullMQAdapter } = require('bull-board/bullMQAdapter')
+
+const someQueue = new Queue('someQueueName')
+const someOtherQueue = new Queue('someOtherQueueName')
+const queueMQ = new QueueMQ('queueMQName')
+
+const { router, setQueues, replaceQueues } = createBullBoard([
+  new BullAdapter(someQueue),
+  new BullAdapter(someOtherQueue),
+  new BullMQAdapter(queueMQ),
+])
+
+const app = express()
+
+app.use('/admin/queues', router)
+
+// other configurations of your server
+```
+
+That's it! Now you can access the `/admin/queues` route, and you will be able to monitor everything that is happening in your queues 😁
+
+
+For more advanced usages check the `examples` folder, currently it contains:
+1. [Basic authentication example](https://github.com/felixmosh/bull-board/tree/master/examples/with-auth)
+2. [Multiple instance of the board](https://github.com/felixmosh/bull-board/tree/master/examples/with-multiple-instances)
+### Queue options
+1. `readOnlyMode` (default: `false`)
+Makes the UI as read only, hides all queue & job related actions
 
 ```js
 const Queue = require('bull')
 const QueueMQ = require('bullmq')
-const { setQueues, BullMQAdapter, BullAdapter } = require('bull-board')
+const { setQueues } = require('bull-board')
+const { BullMQAdapter } = require('bull-board/bullMQAdapter')
+const { BullAdapter } = require('bull-board/bullAdapter')
 
 const someQueue = new Queue()
 const someOtherQueue = new Queue()
 const queueMQ = new QueueMQ()
 
-setQueues([
-  new BullAdapter(someQueue),
+const { router, setQueues, replaceQueues } = createBullBoard([
+  new BullAdapter(someQueue, { readOnlyMode: true }), // only this queue will be in read only mode
   new BullAdapter(someOtherQueue),
-  new BullMQAdapter(queueMQ),
-]);
+  new BullMQAdapter(queueMQ, { readOnlyMode: true }),
+])
 ```
-
-You can then add `UI` to your middlewares (this can be set up using an admin endpoint with some authentication method):
-
-```js
-const app = require('express')()
-const { router } = require('bull-board')
-
-app.use('/admin/queues', router)
-
-// other configurations for your server
-```
-
-That's it! Now you can access the `/admin/queues` route and you will be able to monitor everything that is happening in your queues 😁
-
-### Queue options
-1. `readOnlyMode` (default: `false`)
-Makes the UI as read only, hides all queue & job related actions
-   ```js
-    const Queue = require('bull')
-    const QueueMQ = require('bullmq')
-    const { setQueues, BullMQAdapter, BullAdapter } = require('bull-board')
-    
-    const someQueue = new Queue()
-    const someOtherQueue = new Queue()
-    const queueMQ = new QueueMQ()
-    
-    setQueues([
-      new BullAdapter(someQueue, { readOnlyMode: true }), // only this queue will be in read only mode
-      new BullAdapter(someOtherQueue),
-      new BullMQAdapter(queueMQ, { readOnlyMode: true }),
-    ]);
-   ```
 
 ### Hosting router on a sub path
 
 If you host your express service on a different path than root (/) ie. https://<server_name>/<sub_path>/, then you can add the following code to provide the configuration to the bull-board router. In this example the sub path will be `my-base-path`.
 
 ```js
-const { router } = require('bull-board');
+const Queue = require('bull')
+const { createBullBoard } = require('bull-board')
+const { BullAdapter } = require('bull-board/bullAdapter')
+
+const someQueue = new Queue('someQueueName')
+
+const { router } = createBullBoard([
+  new BullAdapter(someQueue),
+])
 
 // ... express server configuration
 
@@ -119,11 +132,11 @@ You will then find the bull-board UI at the following address `https://<server_n
 
 ## Contributing
 
-First of all, thank you for being interested in helping out, your time is always appreciated in every way. 💯
+First, thank you for being interested in helping out, your time is always appreciated in every way. 💯
 
 Remember to read the [Code of Conduct](https://github.com/vcapretz/bull-board/blob/master/CODE_OF_CONDUCT.md) so you also help maintaining a good Open source community around this project!
 
-Here's some tips:
+Here are some tips:
 
 - Check the [issues page](https://github.com/vcapretz/bull-board/issues) for already opened issues (or maybe even closed ones) that might already address your question/bug/feature request.
 - When opening a bug report provide as much information as you can, some things might be useful for helping debugging and understading the problem
@@ -135,7 +148,7 @@ Here's some tips:
 
 ## Developing
 
-If you want to help us solving the issues, be it a bug, a feature or a question, you might need to fork and clone this project.
+If you want to help us to solve the issues, be it a bug, a feature or a question, you might need to fork and clone this project.
 
 To fork a project means you're going to have your own version of it under your own GitHub profile, you do it by clicking the "Fork" button on the top of any project's page on GitHub.
 
