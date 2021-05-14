@@ -1,7 +1,7 @@
 {
   "name": "@lorenzorapetti/bull-board",
   "description": "Bull queue UI for inspecting jobs",
-  "version": "2.1.0",
+  "version": "3.0.0",
   "keywords": [
     "bull",
     "redis",
